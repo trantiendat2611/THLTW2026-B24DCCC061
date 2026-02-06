@@ -83,6 +83,11 @@
 		path: '/',
 	},
 	{
+  path: '/baitap02',
+  name: 'Bài tập 02',
+  component: '@/pages/baitap02/index',
+},
+	{
 		path: '/403',
 		component: './exception/403/403Page',
 		layout: false,
@@ -95,4 +100,6 @@
 	{
 		component: './exception/404',
 	},
+
+
 ];
