@@ -1,249 +1,179 @@
 import { Button, Card, Form, Input, List, Modal } from 'antd';
 import { useEffect, useState } from 'react';
 
-/* ================== INTERFACE ================== */
+/* ===== TYPES ===== */
 interface Subject {
   id: string;
   name: string;
 }
 
-interface StudySession {
+interface Study {
   id: string;
   subjectId: string;
-  time: string;      // yyyy-mm-ddThh:mm
-  duration: number;  // phút
+  time: string;
+  duration: number;
   content: string;
   note?: string;
 }
 
-interface MonthlyGoal {
-  month: string; // yyyy-mm
-  targetMinutes: number;
+interface Goal {
+  month: string;
+  target: number;
 }
 
-/* ================== STORAGE KEY ================== */
-const SUBJECT_KEY = 'subjects';
-const STUDY_KEY = 'study_sessions';
-const GOAL_KEY = 'monthly_goal';
+/* ===== STORAGE ===== */
+const LS = {
+  subjects: 'subjects',
+  studies: 'studies',
+  goal: 'goal',
+};
+
+const load = (key: string, defaultValue: any) =>
+  JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultValue));
+
+const save = (key: string, data: any) =>
+  localStorage.setItem(key, JSON.stringify(data));
 
 export default function BaiTap02() {
-  /* ================== STATE ================== */
+  /* ===== STATE ===== */
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [sessions, setSessions] = useState<StudySession[]>([]);
-  const [goal, setGoal] = useState<MonthlyGoal | null>(null);
+  const [studies, setStudies] = useState<Study[]>([]);
+  const [goal, setGoal] = useState<Goal | null>(null);
 
-  const [openSubjectModal, setOpenSubjectModal] = useState(false);
-  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [currentSubject, setCurrentSubject] = useState<Subject | null>(null);
+  const [editing, setEditing] = useState<any>(null);
 
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [openStudyModal, setOpenStudyModal] = useState(false);
-  const [editingSession, setEditingSession] = useState<StudySession | null>(null);
-
-  const [openGoalModal, setOpenGoalModal] = useState(false);
+  const [openSubject, setOpenSubject] = useState(false);
+  const [openStudy, setOpenStudy] = useState(false);
+  const [openGoal, setOpenGoal] = useState(false);
 
   const [subjectForm] = Form.useForm();
   const [studyForm] = Form.useForm();
   const [goalForm] = Form.useForm();
 
-  /* ================== LOAD LOCALSTORAGE ================== */
+  /* ===== INIT ===== */
   useEffect(() => {
-    const subjectData = localStorage.getItem(SUBJECT_KEY);
-    const studyData = localStorage.getItem(STUDY_KEY);
-    const goalData = localStorage.getItem(GOAL_KEY);
-
-    if (subjectData) {
-      setSubjects(JSON.parse(subjectData));
-    } else {
-      const defaultSubjects: Subject[] = [
-        { id: '1', name: 'Toán' },
-        { id: '2', name: 'Văn' },
-        { id: '3', name: 'Anh' },
-        { id: '4', name: 'Khoa học' },
-        { id: '5', name: 'Công nghệ' },
-      ];
-      setSubjects(defaultSubjects);
-      localStorage.setItem(SUBJECT_KEY, JSON.stringify(defaultSubjects));
-    }
-
-    if (studyData) {
-      setSessions(JSON.parse(studyData));
-    }
-
-    if (goalData) {
-      setGoal(JSON.parse(goalData));
-    }
+    const defaultSubjects = [
+      { id: '1', name: 'Toán' },
+      { id: '2', name: 'Văn' },
+      { id: '3', name: 'Anh' },
+      { id: '4', name: 'Khoa học' },
+      { id: '5', name: 'Công nghệ' },
+    ];
+    setSubjects(load(LS.subjects, defaultSubjects));
+    setStudies(load(LS.studies, []));
+    setGoal(load(LS.goal, null));
   }, []);
 
-  /* ================== SAVE ================== */
-  const saveSubjects = (data: Subject[]) => {
+  /* ===== SUBJECT CRUD ===== */
+  const saveSubject = (values: any) => {
+    const data = editing
+      ? subjects.map(s => s.id === editing.id ? { ...s, ...values } : s)
+      : [...subjects, { id: Date.now().toString(), ...values }];
+
     setSubjects(data);
-    localStorage.setItem(SUBJECT_KEY, JSON.stringify(data));
-  };
-
-  const saveSessions = (data: StudySession[]) => {
-    setSessions(data);
-    localStorage.setItem(STUDY_KEY, JSON.stringify(data));
-  };
-
-  const saveGoal = (data: MonthlyGoal) => {
-    setGoal(data);
-    localStorage.setItem(GOAL_KEY, JSON.stringify(data));
-  };
-
-  /* ================== SUBJECT CRUD ================== */
-  const submitSubject = () => {
-    subjectForm.validateFields().then((values) => {
-      let data = [...subjects];
-
-      if (editingSubject) {
-        data = data.map((s) =>
-          s.id === editingSubject.id ? { ...s, name: values.name } : s,
-        );
-      } else {
-        data.push({
-          id: Date.now().toString(),
-          name: values.name,
-        });
-      }
-
-      saveSubjects(data);
-      setOpenSubjectModal(false);
-      setEditingSubject(null);
-      subjectForm.resetFields();
-    });
+    save(LS.subjects, data);
+    setOpenSubject(false);
+    setEditing(null);
+    subjectForm.resetFields();
   };
 
   const removeSubject = (id: string) => {
-    saveSubjects(subjects.filter((s) => s.id !== id));
-    saveSessions(sessions.filter((ss) => ss.subjectId !== id));
-    if (selectedSubject?.id === id) setSelectedSubject(null);
+    const s = subjects.filter(x => x.id !== id);
+    const st = studies.filter(x => x.subjectId !== id);
+    setSubjects(s);
+    setStudies(st);
+    save(LS.subjects, s);
+    save(LS.studies, st);
+    if (currentSubject?.id === id) setCurrentSubject(null);
   };
 
-  /* ================== STUDY CRUD ================== */
-  const submitStudy = () => {
-    studyForm.validateFields().then((values) => {
-      let data = [...sessions];
+  /* ===== STUDY CRUD ===== */
+  const saveStudy = (values: any) => {
+    const data = editing
+      ? studies.map(s => s.id === editing.id ? { ...s, ...values } : s)
+      : [...studies, { id: Date.now().toString(), subjectId: currentSubject!.id, ...values }];
 
-      if (editingSession) {
-        data = data.map((s) =>
-          s.id === editingSession.id ? { ...s, ...values } : s,
-        );
-      } else {
-        data.push({
-          id: Date.now().toString(),
-          subjectId: selectedSubject!.id,
-          ...values,
-        });
-      }
-
-      saveSessions(data);
-      setOpenStudyModal(false);
-      setEditingSession(null);
-      studyForm.resetFields();
-    });
+    setStudies(data);
+    save(LS.studies, data);
+    setOpenStudy(false);
+    setEditing(null);
+    studyForm.resetFields();
   };
 
-  /* ================== GOAL ================== */
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  /* ===== GOAL ===== */
+  const month = new Date().toISOString().slice(0, 7);
+  const total = studies
+    .filter(s => s.time.startsWith(month))
+    .reduce((a, b) => a + Number(b.duration), 0);
 
-  const totalMinutesThisMonth = sessions
-    .filter((s) => s.time.startsWith(currentMonth))
-    .reduce((sum, s) => sum + Number(s.duration), 0);
-
-  const submitGoal = () => {
-    goalForm.validateFields().then((values) => {
-      saveGoal({
-        month: values.month,
-        targetMinutes: Number(values.targetMinutes),
-      });
-      setOpenGoalModal(false);
-      goalForm.resetFields();
-    });
+  const saveGoal = (v: any) => {
+    const g = { month: v.month, target: Number(v.target) };
+    setGoal(g);
+    save(LS.goal, g);
+    setOpenGoal(false);
   };
 
-  /* ================== RENDER ================== */
+  /* ===== UI ===== */
   return (
     <Card title="📘 Quản lý học tập" style={{ maxWidth: 900, margin: '24px auto' }}>
-      {/* ===== SUBJECT ===== */}
-      <Card
-        title="Danh mục môn học"
-        extra={<Button onClick={() => setOpenSubjectModal(true)}>Thêm môn</Button>}
-      >
+      {/* SUBJECT */}
+      <Card title="Danh mục môn học" extra={<Button onClick={() => setOpenSubject(true)}>Thêm</Button>}>
         <List
           bordered
           dataSource={subjects}
-          renderItem={(item) => (
+          renderItem={s => (
             <List.Item
+              onClick={() => setCurrentSubject(s)}
               style={{ cursor: 'pointer' }}
-              onClick={() => setSelectedSubject(item)}
               actions={[
-                <a
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingSubject(item);
-                    subjectForm.setFieldsValue(item);
-                    setOpenSubjectModal(true);
-                  }}
-                >
-                  Sửa
-                </a>,
-                <a
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeSubject(item.id);
-                  }}
-                >
-                  Xóa
-                </a>,
+                <a onClick={(e) => {
+                  e.stopPropagation();
+                  setEditing(s);
+                  subjectForm.setFieldsValue(s);
+                  setOpenSubject(true);
+                }}>Sửa</a>,
+                <a onClick={(e) => {
+                  e.stopPropagation();
+                  removeSubject(s.id);
+                }}>Xóa</a>,
               ]}
             >
-              {item.name}
+              {s.name}
             </List.Item>
           )}
         />
       </Card>
 
-      {/* ===== STUDY SESSION ===== */}
-      {selectedSubject && (
+      {/* STUDY */}
+      {currentSubject && (
         <Card
-          title={`📅 Tiến độ học: ${selectedSubject.name}`}
           style={{ marginTop: 24 }}
-          extra={
-            <Button type="primary" onClick={() => setOpenStudyModal(true)}>
-              Thêm buổi học
-            </Button>
-          }
+          title={`📅 ${currentSubject.name}`}
+          extra={<Button onClick={() => setOpenStudy(true)}>Thêm buổi học</Button>}
         >
           <List
             bordered
-            dataSource={sessions.filter(
-              (s) => s.subjectId === selectedSubject.id,
-            )}
-            renderItem={(item) => (
+            dataSource={studies.filter(s => s.subjectId === currentSubject.id)}
+            renderItem={s => (
               <List.Item
                 actions={[
-                  <a
-                    onClick={() => {
-                      setEditingSession(item);
-                      studyForm.setFieldsValue(item);
-                      setOpenStudyModal(true);
-                    }}
-                  >
-                    Sửa
-                  </a>,
-                  <a
-                    onClick={() =>
-                      saveSessions(sessions.filter((s) => s.id !== item.id))
-                    }
-                  >
-                    Xóa
-                  </a>,
+                  <a onClick={() => {
+                    setEditing(s);
+                    studyForm.setFieldsValue(s);
+                    setOpenStudy(true);
+                  }}>Sửa</a>,
+                  <a onClick={() => {
+                    const d = studies.filter(x => x.id !== s.id);
+                    setStudies(d);
+                    save(LS.studies, d);
+                  }}>Xóa</a>,
                 ]}
               >
                 <div>
-                  <b>{new Date(item.time).toLocaleString()}</b> – {item.duration} phút
-                  <div>Nội dung: {item.content}</div>
-                  {item.note && <div>Ghi chú: {item.note}</div>}
+                  <b>{new Date(s.time).toLocaleString()}</b> – {s.duration} phút
+                  <div>Nội dung: {s.content}</div>
+                  {s.note && <div>Ghi chú: {s.note}</div>}
                 </div>
               </List.Item>
             )}
@@ -251,64 +181,37 @@ export default function BaiTap02() {
         </Card>
       )}
 
-      {/* ===== MONTHLY GOAL ===== */}
+      {/* GOAL */}
       <Card
-        title="🎯 Mục tiêu học tập hàng tháng"
         style={{ marginTop: 24 }}
-        extra={<Button onClick={() => setOpenGoalModal(true)}>Thiết lập</Button>}
+        title="🎯 Mục tiêu tháng"
+        extra={<Button onClick={() => setOpenGoal(true)}>Thiết lập</Button>}
       >
         {goal ? (
           <>
-            <p>📅 Tháng: <b>{goal.month}</b></p>
-            <p>🎯 Mục tiêu: <b>{goal.targetMinutes} phút</b></p>
-            <p>⏱ Đã học: <b>{totalMinutesThisMonth} phút</b></p>
-            <p>
-              Trạng thái:{' '}
-              {totalMinutesThisMonth >= goal.targetMinutes ? (
-                <span style={{ color: 'green', fontWeight: 'bold' }}>
-                  ✅ Hoàn thành
-                </span>
-              ) : (
-                <span style={{ color: 'red', fontWeight: 'bold' }}>
-                  ❌ Chưa đạt
-                </span>
-              )}
-            </p>
+            <p>Tháng: <b>{goal.month}</b></p>
+            <p>Mục tiêu: <b>{goal.target} phút</b></p>
+            <p>Đã học: <b>{total} phút</b></p>
+            <b style={{ color: total >= goal.target ? 'green' : 'red' }}>
+              {total >= goal.target ? '✅ Hoàn thành' : '❌ Chưa đạt'}
+            </b>
           </>
         ) : (
-          <p>Chưa thiết lập mục tiêu</p>
+          <p>Chưa có mục tiêu</p>
         )}
       </Card>
 
-      {/* ===== MODALS ===== */}
-      <Modal
-        title={editingSubject ? 'Sửa môn học' : 'Thêm môn học'}
-        visible={openSubjectModal}
-        onOk={submitSubject}
-        onCancel={() => {
-          setOpenSubjectModal(false);
-          setEditingSubject(null);
-          subjectForm.resetFields();
-        }}
-      >
-        <Form form={subjectForm} layout="vertical">
-          <Form.Item name="name" label="Tên môn học" rules={[{ required: true }]}>
+      {/* MODALS */}
+      <Modal visible={openSubject} onOk={() => subjectForm.submit()} onCancel={() => setOpenSubject(false)}>
+        <Form form={subjectForm} onFinish={saveSubject}>
+          <Form.Item name="name" label="Tên môn" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Form>
       </Modal>
 
-      <Modal
-        title={editingSession ? 'Sửa buổi học' : 'Thêm buổi học'}
-        visible={openStudyModal}
-        onOk={submitStudy}
-        onCancel={() => {
-          setOpenStudyModal(false);
-          setEditingSession(null);
-          studyForm.resetFields();
-        }}
-      >
-        <Form form={studyForm} layout="vertical">
+      <Modal visible={openStudy} onOk={() => studyForm.submit()} onCancel={() => setOpenStudy(false)}>
+        <Form form={studyForm} onFinish={saveStudy}>
           <Form.Item name="time" label="Thời gian" rules={[{ required: true }]}>
             <Input type="datetime-local" />
           </Form.Item>
@@ -319,25 +222,17 @@ export default function BaiTap02() {
             <Input />
           </Form.Item>
           <Form.Item name="note" label="Ghi chú">
-            <Input.TextArea />
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
 
-      <Modal
-        title="Thiết lập mục tiêu học tập"
-        visible={openGoalModal}
-        onOk={submitGoal}
-        onCancel={() => {
-          setOpenGoalModal(false);
-          goalForm.resetFields();
-        }}
-      >
-        <Form form={goalForm} layout="vertical">
-          <Form.Item name="month" label="Tháng" initialValue={currentMonth} rules={[{ required: true }]}>
+      <Modal visible={openGoal} onOk={() => goalForm.submit()} onCancel={() => setOpenGoal(false)}>
+        <Form form={goalForm} onFinish={saveGoal}>
+          <Form.Item name="month" initialValue={month} label="Tháng">
             <Input type="month" />
           </Form.Item>
-          <Form.Item name="targetMinutes" label="Mục tiêu (phút)" rules={[{ required: true }]}>
+          <Form.Item name="target" label="Mục tiêu (phút)" rules={[{ required: true }]}>
             <Input type="number" />
           </Form.Item>
         </Form>

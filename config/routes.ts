@@ -83,7 +83,6 @@
 		path: '/',
 	},
 
-	// ======= THÊM BÀI TẬP 01 =======
 	{
 		path: '/baitap01',
 		name: 'Bài tập 01 - Đoán số',
@@ -92,7 +91,7 @@
 
 	{
 		path: '/baitap02',
-		name: 'Bài tập 02',
+		name: 'Bài tập 02 - Quản lý tiến độ học tập',
 		component: '@/pages/baitap02/index',
 	},
 
