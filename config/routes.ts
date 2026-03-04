@@ -82,11 +82,20 @@
 	{
 		path: '/',
 	},
+
+	// ======= THÊM BÀI TẬP 01 =======
 	{
-  path: '/baitap02',
-  name: 'Bài tập 02',
-  component: '@/pages/baitap02/index',
-},
+		path: '/baitap01',
+		name: 'Bài tập 01 - Đoán số',
+		component: '@/pages/baitap01/index',
+	},
+
+	{
+		path: '/baitap02',
+		name: 'Bài tập 02',
+		component: '@/pages/baitap02/index',
+	},
+
 	{
 		path: '/403',
 		component: './exception/403/403Page',
@@ -100,6 +109,4 @@
 	{
 		component: './exception/404',
 	},
-
-
 ];
