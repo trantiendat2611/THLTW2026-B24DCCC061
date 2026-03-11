@@ -84,15 +84,15 @@
 	},
 
 	{
-		path: '/baitap01',
-		name: 'Bài tập 01 - Đoán số',
-		component: '@/pages/baitap01/index',
+		path: '/bai1',
+		name: 'Bài 01 - Oẳn tù tỳ ',
+		component: '@/pages/bai1/index',
 	},
 
 	{
-		path: '/baitap02',
-		name: 'Bài tập 02 - Quản lý tiến độ học tập',
-		component: '@/pages/baitap02/index',
+		path: '/bai2',
+		name: 'Bài2 - Quản lý ngân hàng câu hỏi tự động',
+		component: '@/pages/bai2/index',
 	},
 
 	{
