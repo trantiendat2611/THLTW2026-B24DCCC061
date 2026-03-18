@@ -84,16 +84,11 @@
 	},
 
 	{
-		path: '/bai1',
-		name: 'Bài 01 - Oẳn tù tỳ ',
-		component: '@/pages/bai1/index',
+		path: '/TH03',
+		name: 'Ứng dụng đặt lịch hẹn ',
+		component: '@/pages/TH03/index',
 	},
 
-	{
-		path: '/bai2',
-		name: 'Bài2 - Quản lý ngân hàng câu hỏi tự động',
-		component: '@/pages/bai2/index',
-	},
 
 	{
 		path: '/403',
