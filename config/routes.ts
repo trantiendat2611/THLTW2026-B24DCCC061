@@ -84,9 +84,9 @@
 	},
 
 	{
-		path: '/TH03',
-		name: 'Ứng dụng đặt lịch hẹn ',
-		component: '@/pages/TH03/index',
+		path: '/TH04',
+		name: 'Hệ thống quản lý văn bằng  ',
+		component: '@/pages/TH04/index',
 	},
 
 
