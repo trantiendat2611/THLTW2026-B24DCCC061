@@ -84,9 +84,9 @@
 	},
 
 	{
-		path: '/TH04',
-		name: 'Hệ thống quản lý văn bằng  ',
-		component: '@/pages/TH04/index',
+		path: '/TH05',
+		name: 'Hệ thống quản câu lạc bộ  ',
+		component: '@/pages/TH05/index',
 	},
 
 
