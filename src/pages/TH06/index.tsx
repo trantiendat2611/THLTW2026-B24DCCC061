@@ -53,7 +53,7 @@ const TravelApp = () => {
     return filtered;
   }, [destinations, filterType, sortBy]);
 
-  // --- HÀNH ĐỘNG ---
+
   const addToItinerary = (item: any) => setItinerary([...itinerary, { ...item, key: Date.now() }]);
   const removeFromItinerary = (key: any) => setItinerary(itinerary.filter(i => i.key !== key));
 
@@ -179,7 +179,6 @@ const TravelApp = () => {
             </Row>
           )}
 
-          {/* 3. QUẢN LÝ NGÂN SÁCH (Sửa: Alert rõ ràng và Progress chi tiết) */}
           {currentTab === '3' && (
             <Row gutter={[24, 24]}>
               <Col xs={24} md={14}>
@@ -314,7 +313,7 @@ const TravelApp = () => {
                 <Alert message="Dữ liệu thống kê được cập nhật theo thời gian thực từ các lịch trình người dùng đã tạo." type="info" showIcon />
               </TabPane>
             </Tabs>
-          )}
+          )} 
 
         </div>
       </Content>
