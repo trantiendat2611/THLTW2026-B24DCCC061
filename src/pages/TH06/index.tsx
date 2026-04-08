@@ -15,8 +15,6 @@ const { Header, Content } = Layout;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { Title, Text } = Typography;
-
-// --- DỮ LIỆU KHỞI TẠO ---
 const initialDestinations = [
   { id: 1, name: 'Vịnh Hạ Long', type: 'biển', price: 2000000, rating: 5, img: 'https://picsum.photos/id/1015/400/300', food: 500000, stay: 1000000, transport: 500000, time: 2, desc: 'Kỳ quan thiên nhiên thế giới' },
   { id: 2, name: 'Đà Lạt', type: 'núi', price: 1500000, rating: 4.5, img: 'https://picsum.photos/id/1016/400/300', food: 400000, stay: 700000, transport: 400000, time: 3, desc: 'Thành phố ngàn hoa' },
@@ -25,14 +23,12 @@ const initialDestinations = [
 
 const TravelApp = () => {
   const [destinations, setDestinations] = useState(initialDestinations);
-  const [itinerary, setItinerary] = useState<any[]>([]);
+  const [itinerary, setItinerary] = useState<any[]>([]); 
   const [budgetLimit, setBudgetLimit] = useState(5000000);
   const [currentTab, setCurrentTab] = useState('1');
   const [filterType, setFilterType] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [uploadedImage, setUploadedImage] = useState<string>('');
-
-  // --- LOGIC TÍNH TOÁN ---
   const totalCost = useMemo(() => itinerary.reduce((sum, item) => sum + item.price, 0), [itinerary]);
   const totalDays = useMemo(() => itinerary.reduce((sum, item) => sum + item.time, 0), [itinerary]);
   
@@ -94,8 +90,6 @@ const TravelApp = () => {
 
       <Content style={{ marginTop: 80, padding: '0 20px', paddingBottom: 40, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', minHeight: '100vh' }}>
         <div style={{ background: '#fff', padding: 24, borderRadius: 12, minHeight: '85vh', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', marginTop: 20 }}>
-          
-          {/* 1. TRANG CHỦ - KHÁM PHÁ (Sửa: Thêm Responsive chuẩn) */}
           {currentTab === '1' && (
             <>
               <Title level={4}>Khám phá điểm đến nổi bật</Title>
@@ -142,8 +136,6 @@ const TravelApp = () => {
               </Row>
             </>
           )}
-
-          {/* 2. TẠO LỊCH TRÌNH (Sửa: Thêm tính toán thời gian di chuyển) */}
           {currentTab === '2' && (
             <Row gutter={[24, 24]}>
               <Col xs={24} lg={16}>
@@ -236,8 +228,6 @@ const TravelApp = () => {
               </Col>
             </Row>
           )}
-
-          {/* 4. ADMIN (Sửa: Đầy đủ Form fields và Thống kê theo bảng) */}
           {currentTab === '4' && (
             <Tabs defaultActiveKey="admin-1" type="card">
               <TabPane tab={<span><PlusOutlined />Quản lý điểm đến</span>} key="admin-1">
