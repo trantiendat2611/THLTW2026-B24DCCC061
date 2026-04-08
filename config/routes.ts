@@ -85,8 +85,8 @@
 
 	{
 		path: '/TH05',
-		name: 'Hệ thống quản câu lạc bộ  ',
-		component: '@/pages/TH05/index',
+		name: 'Ứng dụng lập kế hoạch du lịch  ',
+		component: '@/pages/TH06/index',
 	},
 
 
