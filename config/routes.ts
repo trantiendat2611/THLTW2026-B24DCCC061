@@ -42,6 +42,12 @@
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
 	},
+	{
+		path: '/don-hang',
+		name: 'Quản lý đơn hàng',
+		icon: 'ShoppingCartOutlined',
+		component: './KTGK',
+	},
 
 	// DANH MUC HE THONG
 	// {
@@ -82,13 +88,6 @@
 	{
 		path: '/',
 	},
-
-	{
-		path: '/TH05',
-		name: 'Ứng dụng lập kế hoạch du lịch  ',
-		component: '@/pages/TH06/index',
-	},
-
 
 	{
 		path: '/403',
