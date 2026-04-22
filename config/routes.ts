@@ -44,9 +44,9 @@
 	},
 	{
 		path: '/don-hang',
-		name: 'Quản lý đơn hàng',
+		name: 'Blog cá nhân',
 		icon: 'ShoppingCartOutlined',
-		component: './KTGK',
+		component: './TH07',
 	},
 
 	// DANH MUC HE THONG
