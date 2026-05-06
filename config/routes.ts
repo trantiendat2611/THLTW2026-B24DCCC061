@@ -43,10 +43,10 @@
 		component: './TodoList',
 	},
     {
-        path: '/th09',
-        name: 'Ứng dụng quản lý công việc',
-        icon: 'CheckCircleOutlined',
-        component: './TH09',
+        path: '/th08',
+        name: 'Ứng dụng thể dục, theo dõi sức khỏe',
+        icon: 'HeartOutlined',
+        component: './TH08',
     },
  
 	// DANH MUC HE THONG
