@@ -42,18 +42,18 @@
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
 	},
-	{
-		path: '/don-hang',
-		name: 'Blog cá nhân',
-		icon: 'ShoppingCartOutlined',
-		component: './TH07',
-	},
-
+    {
+        path: '/th09',
+        name: 'Ứng dụng quản lý công việc',
+        icon: 'CheckCircleOutlined',
+        component: './TH09',
+    },
+ 
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
 	// 	path: '/danh-muc',
-	// 	icon: 'copy',
+	// 	icon: 'copy'
 	// 	routes: [
 	// 		{
 	// 			name: 'ChucVu',
